@@ -1,0 +1,7 @@
+# JetBrains
+.idea/
+
+# Temporary ignore for development
+cert.pem
+private.pem
+tmp.txt
