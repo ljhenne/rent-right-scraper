@@ -7,12 +7,15 @@ import (
 	"github.com/gocolly/colly"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 )
 
 var (
+	allowedDomain = os.Getenv("ALLOWED_DOMAIN")
 	certFile = flag.String("cert", "./cert.pem", "A PEM eoncoded certificate file.")
 	keyFile  = flag.String("key", "./private.pem", "A PEM encoded private key file.")
+	url = os.Getenv("URL_TO_VISIT")
 )
 
 func main()  {
@@ -29,7 +32,7 @@ func main()  {
 		Certificates: []tls.Certificate{cert},
 	}
 	c := colly.NewCollector(
-		colly.AllowedDomains("some-site"),
+		colly.AllowedDomains(allowedDomain),
 	)
 	c.WithTransport(&http.Transport{TLSClientConfig: tlsConfig})
 	c.OnHTML("#search-results", func (e *colly.HTMLElement) {
@@ -42,7 +45,6 @@ func main()  {
 		fmt.Println("Visiting ... ", r.URL.String())
 	})
 
-	url := "some-site"
 	err = c.Visit(url)
 	if err != nil {
 		log.Fatal(err)
