@@ -3,5 +3,6 @@
 
 # Temporary ignore for development
 cert.pem
+cheatsheet.md
 private.pem
 tmp.txt
