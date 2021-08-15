@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gocolly/colly"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -18,15 +19,19 @@ var (
 	url = os.Getenv("URL_TO_VISIT")
 )
 
+func check(e error) {
+	if e != nil {
+		log.Fatal(e)
+	}
+}
+
+
 func main()  {
 	fmt.Println("Starting script...")
 
 	// Load client cert
 	cert, err := tls.LoadX509KeyPair(*certFile, *keyFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	check(err)
 	// Setup HTTPS client
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{cert},
@@ -37,7 +42,10 @@ func main()  {
 	c.WithTransport(&http.Transport{TLSClientConfig: tlsConfig})
 	c.OnHTML("#search-results", func (e *colly.HTMLElement) {
 		numChildren := e.DOM.Children().Length()
-		fmt.Printf("Found %s child elements... ", strconv.Itoa(numChildren))
+		fmt.Printf("Found %s child elements... gonna save the file now", strconv.Itoa(numChildren))
+
+		err := ioutil.WriteFile("site.html", e.Response.Body, 0600)
+		check(err)
 	})
 
 	// Before making a request print "Visiting ..."
@@ -46,7 +54,5 @@ func main()  {
 	})
 
 	err = c.Visit(url)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 }
