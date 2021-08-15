@@ -7,7 +7,6 @@ import (
 	"github.com/gocolly/colly"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 )
 
@@ -25,13 +24,9 @@ func main()  {
 		log.Fatal(err)
 	}
 
-	// SSLKEYLOGFILE writer
-	w, err := os.OpenFile("tls-secrets.txt", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0777)
-
 	// Setup HTTPS client
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{cert},
-		KeyLogWriter: w,
 	}
 	c := colly.NewCollector(
 		colly.AllowedDomains("some-site"),
